@@ -15,11 +15,11 @@ indent_size = 4
 ij_formatter_enabled = false
 # Directory.Build.props files
 [*.props]
-indent_size = 2
+indent_size = 4
 ij_formatter_enabled = false
 # Xml files
 [*.xml]
-indent_size = 2
+indent_size = 4
 # C# files
 [{*.cs,*.cshtml}]
 #### Core EditorConfig Options ####

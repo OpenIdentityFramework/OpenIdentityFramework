@@ -1,0 +1,21 @@
+<Project>
+
+    <PropertyGroup>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionSuffix>alpha1</VersionSuffix>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+        <Company>Open Identity Framework</Company>
+        <Authors>Roman Bukin</Authors>
+        <Copyright>Roman Bukin</Copyright>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>All</AnalysisMode>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <PackageProjectUrl>https://github.com/OpenIdentityFramework/OpenIdentityFramework</PackageProjectUrl>
+        <PackageReleaseNotes>https://github.com/OpenIdentityFramework/OpenIdentityFramework/releases</PackageReleaseNotes>
+    </PropertyGroup>
+
+</Project>
