@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3325A45B-FC2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdentityFramework", "src\OpenIdentityFramework\OpenIdentityFramework.csproj", "{5966876C-8293-45B7-8FCA-5CCFE1048DE8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3F951830-DA97-4835-897F-04C70BEC8CC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdentityFramework.Tests.Unit", "tests\OpenIdentityFramework.Tests.Unit\OpenIdentityFramework.Tests.Unit.csproj", "{B2E12FC5-C721-4EB4-85CF-F439256D0A84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +33,10 @@ Global
 		{5966876C-8293-45B7-8FCA-5CCFE1048DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5966876C-8293-45B7-8FCA-5CCFE1048DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5966876C-8293-45B7-8FCA-5CCFE1048DE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2E12FC5-C721-4EB4-85CF-F439256D0A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2E12FC5-C721-4EB4-85CF-F439256D0A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2E12FC5-C721-4EB4-85CF-F439256D0A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2E12FC5-C721-4EB4-85CF-F439256D0A84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +44,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3325A45B-FC28-4A9F-9947-0414B189B60A} = {FEAD80F3-831E-4590-905A-C3BF9CA3ABB3}
 		{5966876C-8293-45B7-8FCA-5CCFE1048DE8} = {3325A45B-FC28-4A9F-9947-0414B189B60A}
+		{3F951830-DA97-4835-897F-04C70BEC8CC0} = {FEAD80F3-831E-4590-905A-C3BF9CA3ABB3}
+		{B2E12FC5-C721-4EB4-85CF-F439256D0A84} = {3F951830-DA97-4835-897F-04C70BEC8CC0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AB3E4EF-C773-443B-948C-26333F86F0B5}

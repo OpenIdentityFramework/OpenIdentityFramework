@@ -319,3 +319,7 @@ csharp_place_method_attribute_on_same_line = false
 csharp_place_accessorholder_attribute_on_same_line = false
 csharp_place_accessor_attribute_on_same_line = false
 csharp_place_field_attribute_on_same_line = false
+# Diagnostics
+# CA2007: Do not directly await a Task
+# An asynchronous method awaits a Task directly.
+dotnet_diagnostic.CA2007.severity = suggestion
