@@ -320,6 +320,13 @@ csharp_place_accessorholder_attribute_on_same_line = false
 csharp_place_accessor_attribute_on_same_line = false
 csharp_place_field_attribute_on_same_line = false
 # Diagnostics
+# CA1054: URI parameters should not be strings
+# A type declares a method with a string parameter whose name contains "uri", "Uri", "urn", "Urn", "url", or "Url", 
+# and the type does not declare a corresponding overload that takes a System.Uri parameter.
+dotnet_diagnostic.CA1054.severity = suggestion
+# CA1056: URI properties should not be strings
+# A type declares a string property whose name contains "uri", "Uri", "urn", "Urn", "url", or "Url".
+dotnet_diagnostic.CA1056.severity = suggestion
 # CA2007: Do not directly await a Task
 # An asynchronous method awaits a Task directly.
 dotnet_diagnostic.CA2007.severity = suggestion

@@ -12,52 +12,65 @@ using OpenIdentityFramework.Endpoints.Results;
 using OpenIdentityFramework.Endpoints.Results.Implementation;
 using OpenIdentityFramework.Extensions;
 using OpenIdentityFramework.Models;
+using OpenIdentityFramework.Services.Endpoints.Authorize;
 
 namespace OpenIdentityFramework.Endpoints.Handlers.Implementation;
 
-public class DefaultAuthorizeEndpointHandler<THttpRequestContext>
-    : IAuthorizeEndpointHandler<THttpRequestContext>
-    where THttpRequestContext : class, IHttpRequestContext
+public class DefaultAuthorizeEndpointHandler<TOperationContext>
+    : IAuthorizeEndpointHandler<TOperationContext>
+    where TOperationContext : class, IOperationContext
 {
     public DefaultAuthorizeEndpointHandler(
         IOptionsMonitor<OpenIdentityFrameworkOptions> options,
-        ILogger<DefaultAuthorizeEndpointHandler<THttpRequestContext>> logger)
+        IAuthorizeRequestValidator<TOperationContext> requestValidator,
+        ILogger<DefaultAuthorizeEndpointHandler<TOperationContext>> logger)
     {
         Options = options;
+        RequestValidator = requestValidator;
         Logger = logger;
     }
 
     protected IOptionsMonitor<OpenIdentityFrameworkOptions> Options { get; }
-    protected ILogger<DefaultAuthorizeEndpointHandler<THttpRequestContext>> Logger { get; }
+    protected IAuthorizeRequestValidator<TOperationContext> RequestValidator { get; }
+    protected ILogger<DefaultAuthorizeEndpointHandler<TOperationContext>> Logger { get; }
 
-    public async Task<IEndpointHandlerResult> HandleAsync(THttpRequestContext requestContext, CancellationToken cancellationToken)
+    public virtual async Task<IEndpointHandlerResult> HandleAsync(
+        HttpContext httpContext,
+        TOperationContext operationContext,
+        CancellationToken cancellationToken)
     {
         Logger.HandleAsyncStarted();
-        ArgumentNullException.ThrowIfNull(requestContext);
+        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(operationContext);
         // https://www.ietf.org/archive/id/draft-ietf-oauth-v2-1-11.html#section-3.1
-        // The authorization server MUST support the use of the HTTP GET method Section 9.3.1 of [RFC9110] for the authorization endpoint
-        // and MAY support the POST method (Section 9.3.3 of [RFC9110]) as well.
+        // The authorization server MUST support the use of the HTTP GET method section 9.3.1 of [RFC9110] for the authorization endpoint
+        // and MAY support the POST method (section 9.3.3 of [RFC9110]) as well.
         // https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.1
         // Authorization Servers MUST support the use of the HTTP GET and POST methods defined in RFC 7231 [RFC7231] at the Authorization Endpoint.
         // Clients MAY use the HTTP GET or POST methods to send the Authorization Request to the Authorization Server.
-        // If using the HTTP GET method, the request parameters are serialized using URI Query String Serialization, per Section 13.1.
-        // If using the HTTP POST method, the request parameters are serialized using Form Serialization, per Section 13.2.
+        // If using the HTTP GET method, the request parameters are serialized using URI Query String Serialization, per section 13.1.
+        // If using the HTTP POST method, the request parameters are serialized using Form Serialization, per section 13.2.
         IReadOnlyDictionary<string, StringValues> parameters;
-        if (HttpMethods.IsGet(requestContext.HttpContext.Request.Method))
+        if (HttpMethods.IsGet(httpContext.Request.Method))
         {
-            parameters = requestContext.HttpContext.Request.Query.AsReadOnlyDictionary();
+            parameters = httpContext.Request.Query.AsReadOnlyDictionary();
         }
-        else if (HttpMethods.IsPost(requestContext.HttpContext.Request.Method))
+        else if (HttpMethods.IsPost(httpContext.Request.Method))
         {
-            if (!requestContext.HttpContext.Request.HasApplicationFormContentType())
+            if (!httpContext.Request.HasApplicationFormContentType())
             {
                 return new DefaultStatusCodeResult(HttpStatusCode.UnsupportedMediaType);
             }
 
-            var form = await requestContext.HttpContext.Request.ReadFormAsync(cancellationToken);
+            var form = await httpContext.Request.ReadFormAsync(cancellationToken);
             parameters = form.AsReadOnlyDictionary();
         }
+        else
+        {
+            return new DefaultStatusCodeResult(HttpStatusCode.MethodNotAllowed);
+        }
 
+        var validationResult = await RequestValidator.ValidateAsync(httpContext, operationContext, parameters, cancellationToken);
         throw new NotImplementedException();
     }
 }

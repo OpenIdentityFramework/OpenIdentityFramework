@@ -18,13 +18,13 @@ namespace OpenIdentityFramework.Configuration.DependencyInjection.Extensions;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static IEndpointRouteBuilder MapOpenIdentityFrameworkEndpoints<THttpRequestContext>(this IEndpointRouteBuilder endpoints)
-        where THttpRequestContext : class, IHttpRequestContext
+    public static IEndpointRouteBuilder MapOpenIdentityFrameworkEndpoints<TOperationContext>(this IEndpointRouteBuilder endpoints)
+        where TOperationContext : class, IOperationContext
     {
         ArgumentNullException.ThrowIfNull(endpoints);
         var optionsMonitor = endpoints.ServiceProvider.GetRequiredService<IOptionsMonitor<OpenIdentityFrameworkOptions>>();
         var options = optionsMonitor.CurrentValue;
-        endpoints.AddEndpoint<IAuthorizeEndpointHandler<THttpRequestContext>, THttpRequestContext>(
+        endpoints.AddEndpoint<IAuthorizeEndpointHandler<TOperationContext>, TOperationContext>(
             options.Endpoints.Authorize.Path,
             new[]
             {
@@ -34,18 +34,18 @@ public static class EndpointRouteBuilderExtensions
         return endpoints;
     }
 
-    public static IEndpointConventionBuilder AddEndpoint<TEndpointHandler, THttpRequestContext>(
+    public static IEndpointConventionBuilder AddEndpoint<TEndpointHandler, TOperationContext>(
         this IEndpointRouteBuilder endpoints,
         [StringSyntax("Route")] string pattern,
         IEnumerable<string> httpMethods)
-        where TEndpointHandler : IEndpointHandler<THttpRequestContext>
-        where THttpRequestContext : class, IHttpRequestContext
+        where TEndpointHandler : IEndpointHandler<TOperationContext>
+        where TOperationContext : class, IOperationContext
     {
         ArgumentNullException.ThrowIfNull(endpoints);
 
         static async Task RequestDelegate(HttpContext httpContext)
         {
-            var contextFactory = httpContext.RequestServices.GetRequiredService<IHttpRequestContextFactory<THttpRequestContext>>();
+            var contextFactory = httpContext.RequestServices.GetRequiredService<IOperationContextFactory<TOperationContext>>();
             var endpointHandler = httpContext.RequestServices.GetRequiredService<TEndpointHandler>();
             await ExecuteHandlerInContextAsync(httpContext, contextFactory, endpointHandler, httpContext.RequestAborted);
         }
@@ -53,17 +53,17 @@ public static class EndpointRouteBuilderExtensions
         return endpoints.MapMethods(pattern, httpMethods, RequestDelegate);
     }
 
-    private static async Task ExecuteHandlerInContextAsync<TEndpointHandler, THttpRequestContext>(
+    private static async Task ExecuteHandlerInContextAsync<TEndpointHandler, TOperationContext>(
         HttpContext httpContext,
-        IHttpRequestContextFactory<THttpRequestContext> contextFactory,
+        IOperationContextFactory<TOperationContext> contextFactory,
         TEndpointHandler endpointHandler,
         CancellationToken cancellationToken)
-        where TEndpointHandler : IEndpointHandler<THttpRequestContext>
-        where THttpRequestContext : class, IHttpRequestContext
+        where TEndpointHandler : IEndpointHandler<TOperationContext>
+        where TOperationContext : class, IOperationContext
     {
         cancellationToken.ThrowIfCancellationRequested();
         var requestContext = await contextFactory.CreateAsync(httpContext, cancellationToken);
-        var endpointResult = await endpointHandler.HandleAsync(requestContext, cancellationToken);
+        var endpointResult = await endpointHandler.HandleAsync(httpContext, requestContext, cancellationToken);
         await requestContext.CommitAsync(cancellationToken);
         await endpointResult.ExecuteAsync(httpContext, cancellationToken);
     }

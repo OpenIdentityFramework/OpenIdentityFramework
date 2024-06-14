@@ -1,6 +1,6 @@
 ﻿namespace OpenIdentityFramework.Constants;
 
-public static class DefaultRoutes
+public static class DefaultRoute
 {
     public const string Authorize = "/openid-connect/authorize";
 }

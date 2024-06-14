@@ -5,8 +5,8 @@ using OpenIdentityFramework.Models;
 
 namespace OpenIdentityFramework.Services.Runtime;
 
-public interface IHttpRequestContextFactory<THttpRequestContext>
-    where THttpRequestContext : IHttpRequestContext
+public interface IOperationContextFactory<TOperationContext>
+    where TOperationContext : IOperationContext
 {
-    Task<THttpRequestContext> CreateAsync(HttpContext httpContext, CancellationToken cancellationToken);
+    Task<TOperationContext> CreateAsync(HttpContext httpContext, CancellationToken cancellationToken);
 }
