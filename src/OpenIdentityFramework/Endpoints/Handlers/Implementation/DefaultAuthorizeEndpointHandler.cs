@@ -12,18 +12,20 @@ using OpenIdentityFramework.Endpoints.Results;
 using OpenIdentityFramework.Endpoints.Results.Implementation;
 using OpenIdentityFramework.Extensions;
 using OpenIdentityFramework.Models;
+using OpenIdentityFramework.Models.Configuration;
 using OpenIdentityFramework.Services.Endpoints.Authorize;
 
 namespace OpenIdentityFramework.Endpoints.Handlers.Implementation;
 
-public class DefaultAuthorizeEndpointHandler<TOperationContext>
+public class DefaultAuthorizeEndpointHandler<TOperationContext, TClient>
     : IAuthorizeEndpointHandler<TOperationContext>
     where TOperationContext : class, IOperationContext
+    where TClient : AbstractClient
 {
     public DefaultAuthorizeEndpointHandler(
         IOptionsMonitor<OpenIdentityFrameworkOptions> options,
-        IAuthorizeRequestValidator<TOperationContext> requestValidator,
-        ILogger<DefaultAuthorizeEndpointHandler<TOperationContext>> logger)
+        IAuthorizeRequestValidator<TOperationContext, TClient> requestValidator,
+        ILogger<DefaultAuthorizeEndpointHandler<TOperationContext, TClient>> logger)
     {
         Options = options;
         RequestValidator = requestValidator;
@@ -31,8 +33,8 @@ public class DefaultAuthorizeEndpointHandler<TOperationContext>
     }
 
     protected IOptionsMonitor<OpenIdentityFrameworkOptions> Options { get; }
-    protected IAuthorizeRequestValidator<TOperationContext> RequestValidator { get; }
-    protected ILogger<DefaultAuthorizeEndpointHandler<TOperationContext>> Logger { get; }
+    protected IAuthorizeRequestValidator<TOperationContext, TClient> RequestValidator { get; }
+    protected ILogger<DefaultAuthorizeEndpointHandler<TOperationContext, TClient>> Logger { get; }
 
     public virtual async Task<IEndpointHandlerResult> HandleAsync(
         HttpContext httpContext,
