@@ -21,4 +21,9 @@ public class InputLengthRestrictionsOptions
     ///     Max length for "state".
     /// </summary>
     public int State { get; set; } = 300;
+
+    /// <summary>
+    ///     Max length for "redirect_uri".
+    /// </summary>
+    public int RedirectUri { get; set; } = 300;
 }

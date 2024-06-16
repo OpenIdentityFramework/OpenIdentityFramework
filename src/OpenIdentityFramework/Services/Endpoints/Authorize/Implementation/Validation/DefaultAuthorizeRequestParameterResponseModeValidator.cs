@@ -141,7 +141,6 @@ public class DefaultAuthorizeRequestParameterResponseModeValidator<TOperationCon
         return new(new ProtocolError(DefaultAuthorizeEndpointError.InvalidRequest, "\"response_mode\" is too long"));
     }
 
-
     protected virtual Result<string, ProtocolError> UnsupportedResponseMode()
     {
         return new(new ProtocolError(DefaultAuthorizeEndpointError.InvalidRequest, "Unsupported \"response_mode\""));

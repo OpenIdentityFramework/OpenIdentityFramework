@@ -8,7 +8,12 @@ namespace OpenIdentityFramework.Services.Endpoints.Authorize.Models.Validation;
 public class AuthorizeRequestRequiredParameters<TClient>
     where TClient : AbstractClient
 {
-    public AuthorizeRequestRequiredParameters(TClient client, IReadOnlySet<string> responseType, string? state, string responseMode, string redirectUri)
+    public AuthorizeRequestRequiredParameters(
+        TClient client,
+        IReadOnlySet<string> responseType,
+        string? state,
+        string responseMode,
+        string redirectUri)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(responseType);

@@ -20,22 +20,26 @@ public class DefaultAuthorizeRequestRequiredParametersValidator<TOperationContex
         IAuthorizeRequestParameterClientIdValidator<TOperationContext, TClient> clientIdValidator,
         IAuthorizeRequestParameterResponseTypeValidator<TOperationContext, TClient> responseTypeValidator,
         IAuthorizeRequestParameterResponseModeValidator<TOperationContext, TClient> responseModeValidator,
-        IAuthorizeRequestParameterStateValidator<TOperationContext, TClient> stateValidator)
+        IAuthorizeRequestParameterStateValidator<TOperationContext, TClient> stateValidator,
+        IAuthorizeRequestParameterRedirectUriValidator<TOperationContext, TClient> redirectUriValidator)
     {
         ArgumentNullException.ThrowIfNull(clientIdValidator);
         ArgumentNullException.ThrowIfNull(responseTypeValidator);
         ArgumentNullException.ThrowIfNull(responseModeValidator);
         ArgumentNullException.ThrowIfNull(stateValidator);
+        ArgumentNullException.ThrowIfNull(redirectUriValidator);
         ClientIdValidator = clientIdValidator;
         ResponseTypeValidator = responseTypeValidator;
         ResponseModeValidator = responseModeValidator;
         StateValidator = stateValidator;
+        RedirectUriValidator = redirectUriValidator;
     }
 
     protected virtual IAuthorizeRequestParameterClientIdValidator<TOperationContext, TClient> ClientIdValidator { get; }
     protected virtual IAuthorizeRequestParameterResponseTypeValidator<TOperationContext, TClient> ResponseTypeValidator { get; }
     protected virtual IAuthorizeRequestParameterResponseModeValidator<TOperationContext, TClient> ResponseModeValidator { get; }
     protected virtual IAuthorizeRequestParameterStateValidator<TOperationContext, TClient> StateValidator { get; }
+    protected virtual IAuthorizeRequestParameterRedirectUriValidator<TOperationContext, TClient> RedirectUriValidator { get; }
 
     public virtual async Task<Result<AuthorizeRequestRequiredParameters<TClient>, ProtocolError>> ValidateAsync(
         HttpContext httpContext,
@@ -45,52 +49,69 @@ public class DefaultAuthorizeRequestRequiredParametersValidator<TOperationContex
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var clientId = await ClientIdValidator.ValidateClientIdAsync(
+        var clientIdResult = await ClientIdValidator.ValidateClientIdAsync(
             httpContext,
             operationContext,
             requestParameters,
             cancellationToken);
-        if (clientId.HasError)
+        if (clientIdResult.HasError)
         {
-            return new(clientId.Error);
+            return new(clientIdResult.Error);
         }
 
-        var client = clientId.Ok;
-        var responseType = await ResponseTypeValidator.ValidateResponseTypeAsync(
-            httpContext,
-            operationContext,
-            requestParameters,
-            client,
-            cancellationToken);
-        if (responseType.HasError)
-        {
-            return new(responseType.Error);
-        }
-
-        var responseTypes = responseType.Ok;
-        var responseMode = await ResponseModeValidator.ValidateResponseModeAsync(
-            httpContext,
-            operationContext,
-            requestParameters,
-            client,
-            responseTypes,
-            cancellationToken);
-        if (responseMode.HasError)
-        {
-            return new(responseMode.Error);
-        }
-
-        var state = await StateValidator.ValidateStateAsync(
+        var client = clientIdResult.Ok;
+        var responseTypeResult = await ResponseTypeValidator.ValidateResponseTypeAsync(
             httpContext,
             operationContext,
             requestParameters,
             client,
             cancellationToken);
-        if (state.HasError)
+        if (responseTypeResult.HasError)
         {
-            return new(state.Error);
+            return new(responseTypeResult.Error);
         }
 
-        throw new NotImplementedException();
+        var responseType = responseTypeResult.Ok;
+        var responseModeResult = await ResponseModeValidator.ValidateResponseModeAsync(
+            httpContext,
+            operationContext,
+            requestParameters,
+            client,
+            responseType,
+            cancellationToken);
+        if (responseModeResult.HasError)
+        {
+            return new(responseModeResult.Error);
+        }
+
+        var stateResult = await StateValidator.ValidateStateAsync(
+            httpContext,
+            operationContext,
+            requestParameters,
+            client,
+            cancellationToken);
+        if (stateResult.HasError)
+        {
+            return new(stateResult.Error);
+        }
+
+        var redirectUriResult = await RedirectUriValidator.ValidateRedirectUriAsync(
+            httpContext,
+            operationContext,
+            requestParameters,
+            client,
+            cancellationToken);
+        if (redirectUriResult.HasError)
+        {
+            return new(redirectUriResult.Error);
+        }
+
+        var result = new AuthorizeRequestRequiredParameters<TClient>(
+            client,
+            responseType,
+            stateResult.Ok,
+            responseModeResult.Ok,
+            redirectUriResult.Ok);
+        return new(result);
     }
 }

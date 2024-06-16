@@ -86,4 +86,12 @@ public abstract class AbstractClient
     /// </summary>
     /// <returns>A set that contains 0 or more values. Can be <see langword="null" />.</returns>
     public abstract IReadOnlySet<string>? GetResponseTypes();
+
+    /// <summary>
+    ///     Returns redirection URI strings for use in redirect-based flows such as the authorization code.<br />
+    ///     <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-v2-1-11.html#section-2.3.1">As required by section 2.3.1 of OAuth 2.1</a>, clients using flows with redirection must register their redirection URI values.<br />
+    ///     The value should correspond to the "redirect_uris" value as described in <a href="https://www.rfc-editor.org/rfc/rfc7591#section-2">section 2 of the OAuth 2.0 Dynamic Client Registration Protocol specification.</a>
+    /// </summary>
+    /// <returns>A set that contains 0 or more values. Can be <see langword="null" />.</returns>
+    public abstract IReadOnlySet<string>? GetRedirectUris();
 }
