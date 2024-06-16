@@ -80,7 +80,7 @@ public class DefaultAuthorizeRequestParameterClientIdValidator<TOperationContext
         }
 
         var client = await Clients.FindEnabledAsync(operationContext, clientId, cancellationToken);
-        if (client is null)
+        if (client is null || client.GetClientId() != clientId)
         {
             return UnknownOrDisabledClient();
         }
